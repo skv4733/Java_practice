@@ -46,6 +46,19 @@ public class OracelJdbcTestAndFileCopies
 				t.init(null);
 				t.fetch();*/
 				fileCopy(new File("1.jpg"), new File("2.png"));
+					//INT TO STRING AND STRING INTO INT
+				String a=String.valueOf(2);
+				int i=Integer.parseInt(a);
+				
+				//converting string to date in java
+				SimpleDateFormat formatter=new SimpleDateFormat("dd.MM.yyyy");
+				Date date=formatter.parse("08.12.1999");
+				System.out.println(date.toString());
+				//converting java util date to sql date
+				java.util.Date utilDate=new java.util.Date();
+				java.sql.Date sqlDate=new java.sql.Date(utilDate.getTime());
+				System.out.println(sqlDate);
+				
 				
 			}
 		
