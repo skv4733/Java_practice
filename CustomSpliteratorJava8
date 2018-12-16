@@ -1,0 +1,103 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import com.workhard.NothingcomeeasyModel.Person;
+
+public class CustomSpliteratorJava8
+	{
+		
+		public static void main(String[] args) throws IOException
+			{
+				Path path = Paths.get("people.txt");
+				try (Stream<String> lines = Files.lines(path)) {
+					Spliterator<String> linespliterator = lines.spliterator();
+					Spliterator<Person> peopleSpliterator = new PersonSpliterator(linespliterator);
+
+					Stream<Person> people = StreamSupport.stream(peopleSpliterator, false);
+					people.forEach(System.out::println);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+	}
+class PersonSpliterator implements Spliterator<Person>
+	{
+
+		private Spliterator<String> lineSpliterator;
+		private String name;
+		private String city;
+		private int age;
+
+		public PersonSpliterator(Spliterator<String> lineSpliterator)
+			{
+
+				this.lineSpliterator = lineSpliterator;
+			}
+
+		@Override
+		public boolean tryAdvance(Consumer<? super Person> action)
+			{
+				if (this.lineSpliterator.tryAdvance(line -> this.name = line)
+						&& this.lineSpliterator.tryAdvance(line -> this.age = Integer.parseInt(line))
+						&& this.lineSpliterator.tryAdvance(line -> this.city = line)) {
+					Person p = new Person(name, age, city);
+					action.accept(p);
+					return true;
+				}
+
+				else {
+					return false;
+				}
+			}
+
+		@Override
+		public Spliterator<Person> trySplit()
+			{
+				return null;
+			}
+
+		@Override
+		public long estimateSize()
+			{
+				return lineSpliterator.estimateSize() / 3;
+			}
+
+		@Override
+		public int characteristics()
+			{
+				return lineSpliterator.characteristics();
+			}
+
+	}
+/*
+ * people.txt file contents 
+ *
+Alice
+52
+New York
+Brian
+25
+Chicago
+Chelsea
+19
+London
+David
+44
+Paris
+Erica
+32
+Berlin
+Francisco
+64
+Mexico
+ * 
+ * 
+ * */
